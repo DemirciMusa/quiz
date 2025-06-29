@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz: Class Relationships (without Inheritance)</title>
+    <title>UML Relationships Quiz</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -22,14 +22,21 @@
         }
 
         .quiz-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
             padding: 40px;
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
             position: relative;
             overflow: hidden;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .quiz-container::before {
@@ -39,7 +46,14 @@
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24);
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
         .quiz-header {
@@ -51,89 +65,148 @@
             font-size: 2.5rem;
             color: #2c3e50;
             margin-bottom: 10px;
-            font-weight: 700;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .quiz-subtitle {
             font-size: 1.2rem;
             color: #7f8c8d;
-            font-weight: 300;
+            margin-bottom: 20px;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            background: #ecf0f1;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease;
+            position: relative;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #2c3e50;
         }
 
         .question-container {
             margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .question-title {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             color: #2c3e50;
             margin-bottom: 25px;
-            font-weight: 600;
+            font-weight: 700;
+            padding-left: 15px;
+            border-left: 4px solid #1e3c72;
         }
 
         .diagram-container {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 25px;
-            border: 2px solid #e9ecef;
+            border: 2px solid #dee2e6;
+            transition: all 0.3s ease;
         }
 
-        .relationship-item {
+        .diagram-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .relationship-diagram {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        .relationship-item:last-child {
-            margin-bottom: 0;
+            justify-content: center;
+            margin: 20px 0;
         }
 
         .class-box {
-            background: #34495e;
+            background: #2c3e50;
             color: white;
             padding: 15px 25px;
             border-radius: 8px;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 1.1rem;
-            min-width: 80px;
             text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .connection-line {
-            flex: 1;
+            width: 150px;
             height: 3px;
-            background: #bdc3c7;
             margin: 0 20px;
             position: relative;
-            border-radius: 2px;
+            background: #34495e;
         }
 
         .connection-line.association {
             background: #3498db;
         }
 
+        .connection-line.aggregation {
+            background: #e74c3c;
+        }
+
         .connection-line.aggregation::after {
             content: '◇';
             position: absolute;
-            right: -8px;
+            right: -15px;
             top: -12px;
             font-size: 20px;
             color: #e74c3c;
         }
 
+        .connection-line.composition {
+            background: #2c3e50;
+        }
+
         .connection-line.composition::after {
             content: '◆';
             position: absolute;
-            right: -8px;
+            right: -15px;
             top: -12px;
             font-size: 20px;
             color: #2c3e50;
+        }
+
+        .connection-line.dependency {
+            background: transparent;
+            border-top: 2px dashed #95a5a6;
+            height: 2px;
+        }
+
+        .connection-line.dependency::after {
+            content: '→';
+            position: absolute;
+            right: -15px;
+            top: -12px;
+            font-size: 20px;
+            color: #95a5a6;
         }
 
         .options-container {
@@ -144,63 +217,100 @@
         }
 
         .option-button {
-            background: #ecf0f1;
-            border: 3px solid #bdc3c7;
+            background: linear-gradient(135deg, #ecf0f1 0%, #d5dbdb 100%);
+            border: 2px solid #bdc3c7;
             border-radius: 12px;
-            padding: 20px;
+            padding: 20px 15px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: #2c3e50;
+            position: relative;
+            overflow: hidden;
         }
 
         .option-button:hover {
-            background: #d5dbdb;
-            border-color: #95a5a6;
+            background: linear-gradient(135deg, #d5dbdb 0%, #bdc3c7 100%);
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
         }
 
         .option-button.selected {
-            background: #3498db;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             border-color: #2980b9;
             color: white;
             transform: translateY(-2px);
         }
 
         .option-button.correct {
-            background: #2ecc71;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
             border-color: #27ae60;
             color: white;
+            animation: success 0.6s ease;
         }
 
         .option-button.incorrect {
-            background: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             border-color: #c0392b;
             color: white;
+            animation: shake 0.5s ease;
         }
 
-        .submit-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        @keyframes success {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 25px;
             border: none;
-            border-radius: 12px;
-            padding: 15px 40px;
-            font-size: 1.2rem;
+            border-radius: 8px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: block;
-            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
         }
 
-        .submit-button:hover {
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+        }
+
+        .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 6px 20px rgba(30, 60, 114, 0.4);
         }
 
-        .submit-button:disabled {
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+        }
+
+        .btn:disabled {
             background: #bdc3c7;
             cursor: not-allowed;
             transform: none;
@@ -208,12 +318,13 @@
         }
 
         .result-container {
-            margin-top: 25px;
+            margin-top: 20px;
             padding: 20px;
             border-radius: 12px;
             text-align: center;
             font-weight: 600;
             display: none;
+            animation: fadeInUp 0.5s ease-out;
         }
 
         .result-container.show {
@@ -221,269 +332,293 @@
         }
 
         .result-container.correct {
-            background: #d5f4e6;
+            background: linear-gradient(135deg, #d5f4e6 0%, #a8e6cf 100%);
             color: #27ae60;
             border: 2px solid #2ecc71;
         }
 
         .result-container.incorrect {
-            background: #fadbd8;
+            background: linear-gradient(135deg, #fadbd8 0%, #f5b7b1 100%);
             color: #c0392b;
             border: 2px solid #e74c3c;
-        }
-
-        .explanation {
-            margin-top: 15px;
-            font-weight: 400;
-            font-size: 1rem;
-            line-height: 1.6;
         }
 
         .score-container {
             text-align: center;
             margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 12px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
             display: none;
         }
 
         .score-container.show {
             display: block;
+            animation: fadeInUp 0.8s ease-out;
         }
 
         .final-score {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .score-message {
+            font-size: 1.3rem;
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
         }
 
-        .reset-button {
-            background: #95a5a6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 30px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .reset-button:hover {
-            background: #7f8c8d;
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .quiz-title {
+                font-size: 2rem;
+            }
+            
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .relationship-diagram {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .connection-line {
+                width: 80px;
+                transform: rotate(90deg);
+            }
         }
     </style>
 </head>
 <body>
     <div class="quiz-container">
         <div class="quiz-header">
-            <h1 class="quiz-title">Quiz: Class Relationships</h1>
-            <p class="quiz-subtitle">Connection between Classes (without Inheritance)</p>
-        </div>
-
-        <div id="question1" class="question-container">
-            <h2 class="question-title">Frage 1: Welche Art von Beziehung zeigt Diagramm 1?</h2>
-            <div class="diagram-container">
-                <div class="relationship-item">
-                    <div class="class-box">A</div>
-                    <div class="connection-line association"></div>
-                    <div class="class-box">B</div>
+            <h1 class="quiz-title">UML Relationships Quiz</h1>
+            <p class="quiz-subtitle">Class Connections (without Inheritance)</p>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                 </div>
-            </div>
-            <div class="options-container">
-                <button class="option-button" data-answer="association">Association</button>
-                <button class="option-button" data-answer="aggregation">Aggregation</button>
-                <button class="option-button" data-answer="composition">Composition</button>
-                <button class="option-button" data-answer="dependency">Dependency</button>
-            </div>
-            <button class="submit-button" onclick="checkAnswer(1, 'association')">Antwort überprüfen</button>
-            <div class="result-container" id="result1">
-                <div class="explanation"></div>
+                <div class="progress-text" id="progressText">Question 0 of 3</div>
             </div>
         </div>
 
-        <div id="question2" class="question-container" style="display: none;">
-            <h2 class="question-title">Frage 2: Welche Art von Beziehung zeigt Diagramm 2?</h2>
-            <div class="diagram-container">
-                <div class="relationship-item">
-                    <div class="class-box">A</div>
-                    <div class="connection-line aggregation"></div>
-                    <div class="class-box">B</div>
-                </div>
-            </div>
-            <div class="options-container">
-                <button class="option-button" data-answer="association">Association</button>
-                <button class="option-button" data-answer="aggregation">Aggregation</button>
-                <button class="option-button" data-answer="composition">Composition</button>
-                <button class="option-button" data-answer="dependency">Dependency</button>
-            </div>
-            <button class="submit-button" onclick="checkAnswer(2, 'aggregation')">Antwort überprüfen</button>
-            <div class="result-container" id="result2">
-                <div class="explanation"></div>
-            </div>
+        <div id="questionContainer" class="question-container">
+            <!-- Questions will be loaded here dynamically -->
         </div>
 
-        <div id="question3" class="question-container" style="display: none;">
-            <h2 class="question-title">Frage 3: Welche Art von Beziehung zeigt Diagramm 3?</h2>
-            <div class="diagram-container">
-                <div class="relationship-item">
-                    <div class="class-box">A</div>
-                    <div class="connection-line composition"></div>
-                    <div class="class-box">B</div>
-                </div>
-            </div>
-            <div class="options-container">
-                <button class="option-button" data-answer="association">Association</button>
-                <button class="option-button" data-answer="aggregation">Aggregation</button>
-                <button class="option-button" data-answer="composition">Composition</button>
-                <button class="option-button" data-answer="dependency">Dependency</button>
-            </div>
-            <button class="submit-button" onclick="checkAnswer(3, 'composition')">Antwort überprüfen</button>
-            <div class="result-container" id="result3">
-                <div class="explanation"></div>
-            </div>
+        <div class="result-container" id="resultContainer">
+            <div id="resultMessage"></div>
+        </div>
+
+        <div class="control-buttons">
+            <button class="btn btn-primary" id="submitBtn" onclick="checkAnswer()" disabled>Check Answer</button>
+            <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display: none;">Next Question</button>
         </div>
 
         <div class="score-container" id="scoreContainer">
             <div class="final-score" id="finalScore"></div>
-            <p>Gut gemacht! Du hast das Quiz abgeschlossen.</p>
-            <button class="reset-button" onclick="resetQuiz()">Quiz wiederholen</button>
+            <div class="score-message" id="scoreMessage"></div>
+            <button class="btn btn-primary" onclick="resetQuiz()">Retry Quiz</button>
         </div>
     </div>
 
     <script>
-        let currentQuestion = 1;
+        let currentQuestion = 0;
         let score = 0;
-        let totalQuestions = 3;
-        let selectedAnswers = {};
+        let selectedAnswer = null;
 
-        const explanations = {
-            1: {
-                correct: "Richtig! Das ist eine Association - eine einfache Beziehung zwischen zwei Klassen ohne spezielle Symbole.",
-                incorrect: "Leider falsch. Das ist eine Association - erkennbar an der einfachen Linie ohne spezielle Symbole."
+        const questions = [
+            {
+                title: "What relationship does Diagram 1 show?",
+                diagram: { type: "association", description: "Simple line between A and B" },
+                options: ["Association", "Aggregation", "Composition", "Dependency"],
+                correct: 0,
+                explanation: {
+                    correct: "✅ Correct! This is an Association - recognizable by the simple line without special symbols.",
+                    incorrect: "❌ That's unfortunately incorrect. An Association is represented by a simple line without special symbols."
+                }
             },
-            2: {
-                correct: "Richtig! Das ist eine Aggregation - erkennbar am leeren Diamanten (◇), der eine 'hat-ein' Beziehung zeigt.",
-                incorrect: "Leider falsch. Das ist eine Aggregation - erkennbar am leeren Diamanten (◇)."
+            {
+                title: "What relationship does Diagram 2 show?",
+                diagram: { type: "aggregation", description: "Line with empty diamond between A and B" },
+                options: ["Association", "Aggregation", "Composition", "Dependency"],
+                correct: 1,
+                explanation: {
+                    correct: "✅ Correct! This is an Aggregation - recognizable by the empty diamond (◇), which shows a 'has-a' relationship.",
+                    incorrect: "❌ That's unfortunately incorrect. An Aggregation is represented by an empty diamond (◇)."
+                }
             },
-            3: {
-                correct: "Richtig! Das ist eine Composition - erkennbar am gefüllten Diamanten (◆), der eine starke 'ist-Teil-von' Beziehung zeigt.",
-                incorrect: "Leider falsch. Das ist eine Composition - erkennbar am gefüllten Diamanten (◆)."
+            {
+                title: "What relationship does Diagram 3 show?",
+                diagram: { type: "composition", description: "Line with filled diamond between A and B" },
+                options: ["Association", "Aggregation", "Composition", "Dependency"],
+                correct: 2,
+                explanation: {
+                    correct: "✅ Correct! This is a Composition - recognizable by the filled diamond (◆), which shows a strong 'part-of' relationship.",
+                    incorrect: "❌ That's unfortunately incorrect. A Composition is represented by a filled diamond (◆)."
+                }
             }
-        };
+        ];
 
-        // Option selection handling
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('option-button')) {
-                const questionContainer = e.target.closest('.question-container');
-                const questionId = questionContainer.id.replace('question', '');
-                
-                // Remove selection from other options in this question
-                questionContainer.querySelectorAll('.option-button').forEach(btn => {
-                    btn.classList.remove('selected');
-                });
-                
-                // Add selection to clicked option
-                e.target.classList.add('selected');
-                selectedAnswers[questionId] = e.target.dataset.answer;
-                
-                // Enable submit button
-                const submitButton = questionContainer.querySelector('.submit-button');
-                submitButton.disabled = false;
-            }
-        });
+        function loadQuestion() {
+            const question = questions[currentQuestion];
+            const container = document.getElementById('questionContainer');
+            
+            container.innerHTML = `
+                <h2 class="question-title">${question.title}</h2>
+                <div class="diagram-container">
+                    <div class="relationship-diagram">
+                        <div class="class-box">A</div>
+                        <div class="connection-line ${question.diagram.type}"></div>
+                        <div class="class-box">B</div>
+                    </div>
+                    <p style="text-align: center; color: #7f8c8d; font-style: italic; margin-top: 15px;">
+                        ${question.diagram.description}
+                    </p>
+                </div>
+                <div class="options-container">
+                    ${question.options.map((option, index) => 
+                        `<button class="option-button" data-index="${index}">${option}</button>`
+                    ).join('')}
+                </div>
+            `;
 
-        function checkAnswer(questionNum, correctAnswer) {
-            const selectedAnswer = selectedAnswers[questionNum];
-            const questionContainer = document.getElementById(`question${questionNum}`);
-            const resultContainer = document.getElementById(`result${questionNum}`);
-            const options = questionContainer.querySelectorAll('.option-button');
-            const submitButton = questionContainer.querySelector('.submit-button');
+            // Update progress
+            updateProgress();
             
-            if (!selectedAnswer) return;
+            // Add event listeners to options
+            document.querySelectorAll('.option-button').forEach(btn => {
+                btn.addEventListener('click', selectOption);
+            });
+        }
+
+        function selectOption(e) {
+            // Remove previous selections
+            document.querySelectorAll('.option-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
             
-            // Disable all options and submit button
-            options.forEach(option => {
-                option.style.pointerEvents = 'none';
-                if (option.dataset.answer === correctAnswer) {
-                    option.classList.add('correct');
-                } else if (option.dataset.answer === selectedAnswer && selectedAnswer !== correctAnswer) {
-                    option.classList.add('incorrect');
+            // Add selection to clicked option
+            e.target.classList.add('selected');
+            selectedAnswer = parseInt(e.target.dataset.index);
+            
+            // Enable submit button
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function checkAnswer() {
+            if (selectedAnswer === null) return;
+            
+            const question = questions[currentQuestion];
+            const isCorrect = selectedAnswer === question.correct;
+            const buttons = document.querySelectorAll('.option-button');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultMessage = document.getElementById('resultMessage');
+            
+            // Disable all buttons
+            buttons.forEach((btn, index) => {
+                btn.style.pointerEvents = 'none';
+                if (index === question.correct) {
+                    btn.classList.add('correct');
+                } else if (index === selectedAnswer && !isCorrect) {
+                    btn.classList.add('incorrect');
                 }
             });
             
-            submitButton.disabled = true;
-            
             // Show result
-            const isCorrect = selectedAnswer === correctAnswer;
             if (isCorrect) {
                 score++;
-                resultContainer.classList.add('correct');
-                resultContainer.querySelector('.explanation').textContent = explanations[questionNum].correct;
+                resultContainer.className = 'result-container correct show';
+                resultMessage.textContent = question.explanation.correct;
             } else {
-                resultContainer.classList.add('incorrect');
-                resultContainer.querySelector('.explanation').textContent = explanations[questionNum].incorrect;
+                resultContainer.className = 'result-container incorrect show';
+                resultMessage.textContent = question.explanation.incorrect;
             }
             
-            resultContainer.classList.add('show');
+            // Update buttons
+            document.getElementById('submitBtn').style.display = 'none';
+            if (currentQuestion < questions.length - 1) {
+                document.getElementById('nextBtn').style.display = 'inline-block';
+            } else {
+                setTimeout(showFinalScore, 2000);
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            selectedAnswer = null;
             
-            // Show next question or final score after delay
-            setTimeout(() => {
-                if (currentQuestion < totalQuestions) {
-                    document.getElementById(`question${currentQuestion}`).style.display = 'none';
-                    currentQuestion++;
-                    document.getElementById(`question${currentQuestion}`).style.display = 'block';
-                } else {
-                    // Show final score
-                    showFinalScore();
-                }
-            }, 3000);
+            // Reset UI
+            document.getElementById('resultContainer').classList.remove('show');
+            document.getElementById('submitBtn').style.display = 'inline-block';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('nextBtn').style.display = 'none';
+            
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
         }
 
         function showFinalScore() {
-            document.getElementById(`question${currentQuestion}`).style.display = 'none';
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('resultContainer').classList.remove('show');
+            document.querySelector('.control-buttons').style.display = 'none';
+            
             const scoreContainer = document.getElementById('scoreContainer');
             const finalScore = document.getElementById('finalScore');
+            const scoreMessage = document.getElementById('scoreMessage');
             
-            finalScore.textContent = `${score}/${totalQuestions} Punkte`;
+            finalScore.textContent = `${score}/${questions.length}`;
+            
+            if (score === questions.length) {
+                scoreMessage.innerHTML = '🏆 Perfect! You are a UML expert!';
+            } else if (score >= questions.length * 0.75) {
+                scoreMessage.innerHTML = '🎉 Excellent! You understand UML relationships well!';
+            } else if (score >= questions.length * 0.5) {
+                scoreMessage.innerHTML = '👍 Good job! With some practice you will get even better!';
+            } else {
+                scoreMessage.innerHTML = '📚 Not bad! Review the concepts and try again!';
+            }
+            
             scoreContainer.classList.add('show');
         }
 
         function resetQuiz() {
-            // Reset variables
-            currentQuestion = 1;
+            currentQuestion = 0;
             score = 0;
-            selectedAnswers = {};
+            selectedAnswer = null;
             
-            // Hide score container
+            // Reset UI
+            document.getElementById('questionContainer').style.display = 'block';
             document.getElementById('scoreContainer').classList.remove('show');
+            document.querySelector('.control-buttons').style.display = 'flex';
+            document.getElementById('submitBtn').style.display = 'inline-block';
+            document.getElementById('nextBtn').style.display = 'none';
             
-            // Reset all questions
-            for (let i = 1; i <= totalQuestions; i++) {
-                const questionContainer = document.getElementById(`question${i}`);
-                const resultContainer = document.getElementById(`result${i}`);
-                const options = questionContainer.querySelectorAll('.option-button');
-                const submitButton = questionContainer.querySelector('.submit-button');
-                
-                // Hide all questions except first
-                questionContainer.style.display = i === 1 ? 'block' : 'none';
-                
-                // Reset options
-                options.forEach(option => {
-                    option.classList.remove('selected', 'correct', 'incorrect');
-                    option.style.pointerEvents = 'auto';
-                });
-                
-                // Reset submit button
-                submitButton.disabled = true;
-                
-                // Reset result container
-                resultContainer.classList.remove('show', 'correct', 'incorrect');
-                resultContainer.querySelector('.explanation').textContent = '';
-            }
+            loadQuestion();
         }
+
+        // Initialize quiz
+        loadQuestion();
     </script>
 </body>
 </html>
