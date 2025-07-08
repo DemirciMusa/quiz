@@ -194,20 +194,7 @@
             color: #2c3e50;
         }
 
-        .connection-line.dependency {
-            background: transparent;
-            border-top: 2px dashed #95a5a6;
-            height: 2px;
-        }
 
-        .connection-line.dependency::after {
-            content: '→';
-            position: absolute;
-            right: -15px;
-            top: -12px;
-            font-size: 20px;
-            color: #95a5a6;
-        }
 
         .options-container {
             display: grid;
@@ -483,32 +470,7 @@
                 border-radius: 50%;
                 box-shadow: none;
             }
-            
-            .connection-line.dependency {
-                background: transparent;
-                border-left: 3px dashed #95a5a6;
-                width: 3px;
-                height: 50px;
-            }
-            
-            .connection-line.dependency::after {
-                content: '→';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%) rotate(90deg);
-                font-size: 24px;
-                color: #95a5a6;
-                line-height: 1;
-                background: #f8f9fa;
-                width: 30px;
-                height: 30px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 50%;
-            }
-            
+                       
             .options-container {
                 grid-template-columns: 1fr;
                 gap: 12px;
@@ -577,13 +539,7 @@
                 width: 30px;
                 height: 30px;
             }
-            
-            .connection-line.dependency::after {
-                font-size: 20px;
-                width: 26px;
-                height: 26px;
-            }
-            
+                       
             .option-button {
                 padding: 12px 10px;
                 font-size: 0.9rem;
@@ -637,7 +593,7 @@
             {
                 title: "What relationship does Diagram 1 show?",
                 diagram: { type: "association", description: "Simple line between A and B" },
-                options: ["Association", "Aggregation", "Composition", "Dependency"],
+                options: ["Association", "Aggregation", "Composition"],
                 correct: 0,
                 explanation: {
                     correct: "✅ Correct! This is an Association - recognizable by the simple line without special symbols.",
@@ -647,7 +603,7 @@
             {
                 title: "What relationship does Diagram 2 show?",
                 diagram: { type: "aggregation", description: "Line with empty diamond between A and B" },
-                options: ["Association", "Aggregation", "Composition", "Dependency"],
+                options: ["Association", "Aggregation", "Composition"],
                 correct: 1,
                 explanation: {
                     correct: "✅ Correct! This is an Aggregation - recognizable by the empty diamond (◇), which shows a 'has-a' relationship.",
@@ -657,7 +613,7 @@
             {
                 title: "What relationship does Diagram 3 show?",
                 diagram: { type: "composition", description: "Line with filled diamond between A and B" },
-                options: ["Association", "Aggregation", "Composition", "Dependency"],
+                options: ["Association", "Aggregation", "Composition"],
                 correct: 2,
                 explanation: {
                     correct: "✅ Correct! This is a Composition - recognizable by the filled diamond (◆), which shows a strong 'part-of' relationship.",
